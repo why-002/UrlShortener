@@ -2,7 +2,7 @@
 {
     public class UrlShortener
     {
-        public const int NumberOfCharsShortLink = 8;
+        public const int NumberOfCharsShortLink = 7;
         private const string Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         private readonly Random _random = new Random();
         private readonly LinkShortenerDbContext _context;
