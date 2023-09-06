@@ -16,8 +16,7 @@ builder.Services.AddDbContext<LinkShortenerDbContext>(options =>
     options.UseInMemoryDatabase("LinkShortenerDatabase"));
 builder.Services.AddOutputCache(options =>
 {
-    options.AddBasePolicy(builder =>
-        builder.Expire(TimeSpan.FromSeconds(10)));
+    options.AddBasePolicy(builder => builder.AddPolicy<RedirectPolicy>(), true);
 });
 
 
@@ -36,11 +35,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+app.UseOutputCache();
 
 app.MapPost("api/shorten", async (ShortenUrlRequest request,
                             UrlShortener shortener,
@@ -67,12 +66,27 @@ app.MapPost("api/shorten", async (ShortenUrlRequest request,
 app.MapGet("/{shortUrlCode}", async (string shortUrlCode, LinkShortenerDbContext context) =>
 {
     var url = await context.ShortenedUrls.FirstOrDefaultAsync(s => s.ShortUrlCode == shortUrlCode);
-
+    app.Logger.LogInformation("Queried Database");
     if(url is null)
     {
         return Results.BadRequest();
     }
     return Results.Redirect(url.LongUrl);
-}).CacheOutput();
+});
 
 app.Run();
+
+
+/*
+ 
+ TODO: write a custom cache policy for the http 302 redirect DONE
+       write a url generator that runs in the background and stores urls for future use https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-7.0&tabs=visual-studio
+       write a middleware that will cover for db failures https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/write?view=aspnetcore-7.0
+       write auth
+       write rate limiting
+       write db logs
+       
+ 
+ 
+ 
+ */
