@@ -88,7 +88,6 @@ app.Run();
 /*
  
  TODO: write a custom cache policy for the http 302 redirect DONE
-       write a url generator that runs in the background and stores urls for future use https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-7.0&tabs=visual-studio
        write the url generator such that it adds to a list of acceptable urls, and runs on a quartz shedule. If the list is empty, use the current setup.
        
  
