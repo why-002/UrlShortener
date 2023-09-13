@@ -6,6 +6,7 @@
         private const string Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         private readonly Random _random = new Random();
         private readonly LinkShortenerDbContext _context;
+        private readonly PregeneratedUrlShortener _pregeneratedUrlShortener;
 
         public UrlShortener(LinkShortenerDbContext context)
         {
@@ -14,21 +15,22 @@
 
         public string GenerateShortUrlCode()
         {
-            var chars = new char[NumberOfCharsShortLink];
-
-            for (int i=0; i<NumberOfCharsShortLink; i++)
+            string code = string.Empty;
+            var needsNewLink = true;
+            while (needsNewLink)
             {
-                chars[i] = Alphabet[_random.Next(Alphabet.Length)];
+                var chars = new char[NumberOfCharsShortLink];
+
+                for (int i = 0; i < NumberOfCharsShortLink; i++)
+                {
+                    chars[i] = Alphabet[_random.Next(Alphabet.Length)];
+                }
+
+                code = new string(chars);
+
+                needsNewLink = _context.ShortenedUrls.Any(s => s.ShortUrlCode == code);
             }
-
-            var code = new string(chars);
-
-            if(!_context.ShortenedUrls.Any(s => s.ShortUrlCode == code))
-            {
-                return code;
-            }
-
-            return GenerateShortUrlCode();
+            return code;
         }
     }
 }

@@ -2,6 +2,8 @@ using LinkShortener;
 using LinkShortener.Models;
 using LinkShortener.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +25,14 @@ builder.Services.AddOutputCache(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+});
 builder.Services.AddScoped<UrlShortener>();
+builder.Services.AddSingleton<PregeneratedUrlShortener>();
+builder.Services.AddScoped<ApiUrlShortener>();
+
 
 var app = builder.Build();
 
@@ -42,7 +50,7 @@ app.MapControllers();
 app.UseOutputCache();
 
 app.MapPost("api/shorten", async (ShortenUrlRequest request,
-                            UrlShortener shortener,
+                            ApiUrlShortener shortener,
                             LinkShortenerDbContext context,
                             HttpContext httpContext) =>
 {
@@ -50,7 +58,7 @@ app.MapPost("api/shorten", async (ShortenUrlRequest request,
         return Results.BadRequest("The Url given is invalid");
     }
 
-    var shortUrlCode = shortener.GenerateShortUrlCode();
+    var shortUrlCode = await shortener.GenerateShortUrlCode();
     var shortenedUrl = new ShortenedUrl
     {
         Id = Guid.NewGuid(),
@@ -81,10 +89,7 @@ app.Run();
  
  TODO: write a custom cache policy for the http 302 redirect DONE
        write a url generator that runs in the background and stores urls for future use https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-7.0&tabs=visual-studio
-       write a middleware that will cover for db failures https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/write?view=aspnetcore-7.0
-       write auth
-       write rate limiting
-       write db logs
+       write the url generator such that it adds to a list of acceptable urls, and runs on a quartz shedule. If the list is empty, use the current setup.
        
  
  
