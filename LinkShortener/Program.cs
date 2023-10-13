@@ -88,7 +88,7 @@ app.Run();
 /*
  
  TODO: write a custom cache policy for the http 302 redirect DONE
-       write the url generator such that it adds to a list of acceptable urls, and runs on a quartz shedule. If the list is empty, use the current setup.
+       write the url generator such that it adds to a list of acceptable urls, and runs on a quartz shedule. If the list is empty, use the current setup. DONE
        
  
  

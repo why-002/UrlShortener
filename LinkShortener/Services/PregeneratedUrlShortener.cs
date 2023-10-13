@@ -28,14 +28,22 @@ namespace LinkShortener.Services
                 await _scheduler.AddJob(job, replace, durable);
                 await _scheduler.Start();
             }
-            if (shortUrls.Count() > 0)
+            string temp;
+            if (shortUrls.Count() > 50)
             {
-                var temp = shortUrls.First();
+                temp = shortUrls.First();
                 shortUrls.RemoveAt(0);
                 return temp;
             }
+
+            temp = shortUrls.FirstOrDefault("");
+            if(temp != "")
+            {
+                shortUrls.RemoveAt(0);
+            }
+
             await _scheduler.TriggerJob(new JobKey("name", "group"));
-            return "";
+            return temp;
         }
         public void AddShortUrl(string url)
         {
