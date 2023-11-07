@@ -1,36 +1,28 @@
-﻿namespace LinkShortener.Services
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+
+namespace LinkShortener.Services
 {
     public class UrlShortener
     {
-        public const int NumberOfCharsShortLink = 7;
-        private const string Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        private readonly Random _random = new Random();
-        private readonly LinkShortenerDbContext _context;
-        private readonly PregeneratedUrlShortener _pregeneratedUrlShortener;
-
-        public UrlShortener(LinkShortenerDbContext context)
+        private readonly PregenerateUrls _pregenerator;
+        private readonly UrlGenerator _urlShortener;
+        public UrlShortener(PregenerateUrls pregen, UrlGenerator urlShortener) 
         {
-            _context = context;
+            _pregenerator = pregen;
+            _urlShortener = urlShortener;
         }
-
-        public string GenerateShortUrlCode()
+        public async Task<string> GenerateShortUrlCode()
         {
-            string code = string.Empty;
-            var needsNewLink = true;
-            while (needsNewLink)
+            var code = await _pregenerator.GetShortUrl();
+            if (!String.IsNullOrEmpty(code))
             {
-                var chars = new char[NumberOfCharsShortLink];
-
-                for (int i = 0; i < NumberOfCharsShortLink; i++)
-                {
-                    chars[i] = Alphabet[_random.Next(Alphabet.Length)];
-                }
-
-                code = new string(chars);
-
-                needsNewLink = _context.ShortenedUrls.Any(s => s.ShortUrlCode == code);
+                return code;
             }
-            return code;
+            else
+            {
+                return _urlShortener.GenerateShortUrlCode();
+            }
         }
     }
 }

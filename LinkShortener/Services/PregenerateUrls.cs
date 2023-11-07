@@ -3,13 +3,13 @@ using Quartz;
 
 namespace LinkShortener.Services
 {
-    public class PregeneratedUrlShortener
+    public class PregenerateUrls
     {
         private List<string> shortUrls { get; set; }
-        private readonly UrlShortener urlShortener;
+        private readonly UrlGenerator urlShortener;
         private IScheduler _scheduler;
         private readonly ISchedulerFactory _schedulerFactory;
-        public PregeneratedUrlShortener(ISchedulerFactory schedulerFactory) {
+        public PregenerateUrls(ISchedulerFactory schedulerFactory) {
             _schedulerFactory = schedulerFactory;
             shortUrls = new List<string>();
         }
