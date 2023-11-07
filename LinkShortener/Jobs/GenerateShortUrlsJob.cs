@@ -7,10 +7,10 @@ namespace LinkShortener.Jobs
 {
     public class GenerateShortUrlsJob : IJob
     {
-        private readonly PregeneratedUrlShortener _pregenerator;
-        private readonly UrlShortener _urlShortener;
+        private readonly PregenerateUrls _pregenerator;
+        private readonly UrlGenerator _urlShortener;
         private readonly LinkShortenerDbContext _context; 
-        public GenerateShortUrlsJob(PregeneratedUrlShortener pregen, UrlShortener urlShortener) 
+        public GenerateShortUrlsJob(PregenerateUrls pregen, UrlGenerator urlShortener) 
         {
             _pregenerator = pregen;
             _urlShortener = urlShortener;

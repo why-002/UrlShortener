@@ -29,9 +29,9 @@ builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
 });
-builder.Services.AddScoped<UrlShortener>();
-builder.Services.AddSingleton<PregeneratedUrlShortener>();
-builder.Services.AddScoped<ApiUrlShortener>();
+builder.Services.AddScoped<UrlGenerator>();
+builder.Services.AddSingleton<PregenerateUrls>();
+builder.Services.AddScoped<UrlGenerator>();
 
 
 var app = builder.Build();
@@ -50,7 +50,7 @@ app.MapControllers();
 app.UseOutputCache();
 
 app.MapPost("api/shorten", async (ShortenUrlRequest request,
-                            ApiUrlShortener shortener,
+                            UrlGenerator shortener,
                             LinkShortenerDbContext context,
                             HttpContext httpContext) =>
 {

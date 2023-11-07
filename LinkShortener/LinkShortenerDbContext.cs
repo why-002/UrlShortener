@@ -13,7 +13,7 @@ namespace LinkShortener
         {
             modelBuilder.Entity<ShortenedUrl>(builder =>
             {
-                builder.Property(s => s.ShortUrlCode).HasMaxLength(UrlShortener.NumberOfCharsShortLink);
+                builder.Property(s => s.ShortUrlCode).HasMaxLength(UrlGenerator.NumberOfCharsShortLink);
                 builder.HasIndex(s => s.ShortUrlCode).IsUnique();
             });
         }
