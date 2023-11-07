@@ -10,3 +10,11 @@ cd LinkShortener
 
 dotnet run
 ```
+
+# Running on Docker
+```bash
+# make sure to be in the outer directory
+docker build -f LinkShortener\Dockerfile -t link-shortener .
+
+docker run link-shortener
+```
