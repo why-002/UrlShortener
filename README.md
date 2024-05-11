@@ -1,4 +1,4 @@
-# LinkShortener
+# UrlShortener
 Inspired by Milan Jovanovic's Url shortener. I added in additional performance optimizations to improve speed at scale including rewriting the standard cache protocol to also
 include 302 responses and pregenerated urls in order to minimize database load.
 
