@@ -82,15 +82,11 @@ app.MapGet("/{shortUrlCode}", async (string shortUrlCode, LinkShortenerDbContext
     return Results.Redirect(url.LongUrl);
 });
 
+app.MapGet("/urls", async (LinkShortenerDbContext context) =>
+{
+    var urls = await context.ShortenedUrls.ToListAsync();
+    app.Logger.LogInformation("Queried Database");
+    return Results.Ok(urls);
+});
+
 app.Run();
-
-
-/*
- 
- TODO: write a custom cache policy for the http 302 redirect DONE
-       write the url generator such that it adds to a list of acceptable urls, and runs on a quartz shedule. If the list is empty, use the current setup. DONE
-       
- 
- 
- 
- */

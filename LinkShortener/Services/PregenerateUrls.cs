@@ -9,6 +9,7 @@ namespace LinkShortener.Services
         private readonly UrlGenerator urlShortener;
         private IScheduler _scheduler;
         private readonly ISchedulerFactory _schedulerFactory;
+        private object _urlsLock = new object();
         public PregenerateUrls(ISchedulerFactory schedulerFactory) {
             _schedulerFactory = schedulerFactory;
             shortUrls = new List<string>();
@@ -28,30 +29,40 @@ namespace LinkShortener.Services
                 await _scheduler.AddJob(job, replace, durable);
                 await _scheduler.Start();
             }
+
             string temp;
-            if (shortUrls.Count() > 50)
-            {
-                temp = shortUrls.First();
-                shortUrls.RemoveAt(0);
-                return temp;
-            }
 
-            temp = shortUrls.FirstOrDefault("");
-            if(temp != "")
+            lock (_urlsLock)
             {
-                shortUrls.RemoveAt(0);
-            }
+                if (shortUrls.Count() > 50)
+                {
+                    temp = shortUrls.First();
+                    shortUrls.RemoveAt(0);
+                    return temp;
+                }
 
+                temp = shortUrls.FirstOrDefault("");
+                if (temp != "")
+                {
+                    shortUrls.RemoveAt(0);
+                }
+            }
             await _scheduler.TriggerJob(new JobKey("name", "group"));
             return temp;
         }
         public void AddShortUrl(string url)
         {
-            shortUrls.Add(url);
+            lock (_urlsLock)
+            {
+                shortUrls.Add(url);
+            }
         }
         public int GetCount()
         {
-            return shortUrls.Count();
+            lock (_urlsLock)
+            {
+                return shortUrls.Count();
+            }
         }
     }
 }
